@@ -1,0 +1,21 @@
+{
+  "name": "crudapi",
+  "version": "1.0.0",
+  "description": "CRUD API with an in-memory database",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ElenaBezro/CRUD_API.git"
+  },
+  "author": "Elena Bezrodnova",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ElenaBezro/CRUD_API/issues"
+  },
+  "homepage": "https://github.com/ElenaBezro/CRUD_API#readme"
+}

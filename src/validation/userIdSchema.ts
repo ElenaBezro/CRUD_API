@@ -1,0 +1,3 @@
+const validateUserId = () => {};
+
+export { validateUserId };

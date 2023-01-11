@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run build && node build/index.js",
-    "start:dev": "npm run clean:build && tsc-watch --onSuccess \"node build/index.js\"",
+    "start": "npm run build && node build/App.js",
+    "start:dev": "npm run clean:build && tsc-watch --onSuccess \"node build/App.js\"",
     "clean:build": "rimraf build",
     "build": "npm run clean:build && tsc"
   },

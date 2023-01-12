@@ -19,6 +19,10 @@ class UserService {
   getUsers() {
     return Object.entries(this.users).map(([id, user]) => ({ id, ...user }));
   }
+
+  addUser({ id, username, age, hobbies }: User) {
+    this.users = { ...this.users, [id]: { username, age, hobbies: [...hobbies] } };
+  }
 }
 
 export { UserService };

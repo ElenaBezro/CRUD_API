@@ -1,1 +1,1 @@
-export * from "./userIdSchema";
+export * from "./isCreateUserPayload";

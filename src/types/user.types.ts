@@ -4,3 +4,5 @@ export type User = {
   age: number;
   hobbies: string[];
 };
+
+export type CreateUserPayload = Omit<User, "id">;

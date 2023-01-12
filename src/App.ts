@@ -5,6 +5,7 @@ import * as dotenv from "dotenv";
 import { Server } from "./Server";
 import { getUsers } from "./endpoints/getUsers";
 import { getUser } from "./endpoints/getUser";
+import { postUser } from "./endpoints/postUser";
 
 dotenv.config();
 
@@ -19,8 +20,8 @@ server.get("/api/users/:userId", getUser);
 //   res.statusCode = 200;
 //   res.end("Yay");
 // });
-//server.put("/api/users/:userId", putUser);
-//server.post("/api/users", postUser);
+// server.put("/api/users/:userId", putUser);
+server.post("/api/users", postUser);
 //server.delete("/api/users/:userId", deleteUser);
 
 server.start(Number(process.env.PORT));

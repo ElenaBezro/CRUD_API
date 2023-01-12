@@ -15,14 +15,19 @@ const postUser: RequestHandler = async (req, res, params) => {
           res.end;
           throw new Error("User data is invalid");
         }
+
         const newUser = {
-          ...userData,
+          username: userData.username,
+          age: userData.age,
+          hobbies: [...userData.hobbies],
           id: v4(),
         };
         UserService.getInstance().addUser(newUser);
         // USERS[newUser.id] = userData;
         res.statusCode = 201;
-        res.end(JSON.stringify(newUser));
+        res.end(JSON.stringify(newUser), () => {
+          console.log("\n New User has been added\n");
+        });
       } catch (e: unknown) {
         e instanceof Error && console.log(e.message);
       }

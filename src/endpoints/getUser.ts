@@ -2,9 +2,8 @@ import { RequestHandler, User } from "../types";
 import { validate } from "uuid";
 import { UserService } from "../services/UserService";
 
-const getUser: RequestHandler = async (req, res) => {
-  const userId = req.url!.slice("/api/users/".length);
-  // console.log(userId);
+const getUser: RequestHandler = async (_req, res, pathParams) => {
+  const { userId } = pathParams;
   if (!validate(userId)) {
     res.statusCode = 400;
     res.end(`Not a valid uuid: ${userId}`);

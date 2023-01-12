@@ -12,6 +12,13 @@ const server = new Server();
 
 server.get("/api/users", getUsers);
 server.get("/api/users/:userId", getUser);
+// server.get("/api/users/:userId/projects", getUserProjects);
+// server.get("/api/users/:userId/projects/:projectId", async (_req, res, params) => {
+//   console.log("url params", JSON.stringify(params, undefined, 2));
+
+//   res.statusCode = 200;
+//   res.end("Yay");
+// });
 //server.put("/api/users/:userId", putUser);
 //server.post("/api/users", postUser);
 //server.delete("/api/users/:userId", deleteUser);

@@ -35,19 +35,36 @@ class Server {
       const endpointsByUrl = this.endpoints[(req.method as HTTPMethod | undefined) ?? "GET"];
       const url = req.url ?? "";
 
-      // TODO: find best matching handler
-      const handler = endpointsByUrl[url];
+      const originalUrlParts = url.split("/"); // [ "api", "users", "123", "projects", "proj1"]
+      for (const [url, handler] of Object.entries(endpointsByUrl)) {
+        const registeredUrlParts = url.split("/"); // ["api", "users", ":userId", "projects", ":projectId"]
+        if (registeredUrlParts.length !== originalUrlParts.length) {
+          continue;
+        }
 
-      if (!handler) {
-        res.statusCode = 404;
-        res.end("Unknown request url");
-        return;
+        const pathParams: Record<string, string> = {};
+        const isUrlMatchFound = registeredUrlParts.every((part, index) => {
+          if (originalUrlParts[index] === part) {
+            return true;
+          }
+          if (part[0] === ":") {
+            pathParams[part.slice(1)] = originalUrlParts[index]; // pathParams["userId"] = "123";
+            return true;
+          }
+        });
+
+        if (isUrlMatchFound) {
+          handler(req, res, pathParams).catch(() => {
+            res.statusCode = 500;
+            res.end("Oops, something went wrong :)");
+          });
+
+          return;
+        }
       }
 
-      handler(req, res).catch(() => {
-        res.statusCode = 500;
-        res.end("Oops, something went wrong :)");
-      });
+      res.statusCode = 404;
+      res.end("Unknown request url");
     });
   }
 

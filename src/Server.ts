@@ -12,6 +12,11 @@ class Server {
     DELETE: {},
   };
 
+  /**
+   * Function to register GET http request handler for provided URL
+   * @param url url to handle
+   * @param handler a function to process request for provided URL
+   */
   get(url: string, handler: RequestHandler) {
     this.endpoints.GET[url] = handler;
   }

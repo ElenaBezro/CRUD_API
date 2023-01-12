@@ -1,1 +1,1 @@
-export * from "./isCreateUserPayload";
+export * from "./validateUserPayload";

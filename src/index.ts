@@ -78,7 +78,7 @@ const startServer = () => {
             try {
               if (!isCreateUserPayload(userData)) {
                 res.statusCode = 400;
-                res.end;
+                res.end();
                 throw new Error("User data is invalid");
               }
               const newUser = {

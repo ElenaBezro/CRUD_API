@@ -14,6 +14,7 @@ const deleteUser: RequestHandler = async (req, res, { userId }) => {
     res.end("User does not exist");
     return;
   }
+
   UserService.getInstance().deleteUser(userId);
   res.statusCode = 204;
   console.log("User has been successfully deleted");

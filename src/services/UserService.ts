@@ -1,6 +1,6 @@
-import { v4, validate } from "uuid";
+import { v4 } from "uuid";
 
-import { User } from "../types";
+import { CreateUserPayload, User } from "../types";
 
 class UserService {
   private static instance = new UserService();
@@ -25,8 +25,10 @@ class UserService {
     return userWithoutId && { ...userWithoutId, id };
   }
 
-  addUser({ id, username, age, hobbies }: User) {
-    this.users = { ...this.users, [id]: { username, age, hobbies: [...hobbies] } };
+  addUser({ username, age, hobbies }: CreateUserPayload): User {
+    const id = v4();
+    this.users[id] = { username, age, hobbies: [...hobbies] };
+    return { id, username, age, hobbies: [...hobbies] };
   }
 
   updateUser(user: User) {

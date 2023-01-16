@@ -10,8 +10,7 @@ const getUser: RequestHandler = async (_req, res, pathParams) => {
     return;
   }
 
-  const users = UserService.getInstance().getUsers();
-  const user = users.find((user) => user.id === userId);
+  const user = UserService.getInstance().getUser(userId);
   if (user) {
     res.statusCode = 200;
     res.end(JSON.stringify(user));

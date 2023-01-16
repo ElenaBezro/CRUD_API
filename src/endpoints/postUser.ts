@@ -1,39 +1,39 @@
-import { v4 } from "uuid";
 import { UserService } from "../services/UserService";
 import { RequestHandler } from "../types";
 import { isCreateUserPayload } from "../validation";
 
-const postUser: RequestHandler = async (req, res, params) => {
-  if (req.url === "/api/users") {
+const postUser: RequestHandler = async (req, res, params) =>
+  new Promise((resolve, reject) => {
     let body: Buffer[] = [];
+
     req.on("data", (chunk) => body.push(chunk));
+
     req.on("end", () => {
-      const userData = JSON.parse(Buffer.concat(body).toString());
       try {
+        const userData = JSON.parse(Buffer.concat(body).toString());
         if (!isCreateUserPayload(userData)) {
           res.statusCode = 400;
           res.end();
-          throw new Error("User data is invalid");
+          console.log("User data is invalid");
+          resolve();
         }
 
-        const newUser = {
+        const newUser = UserService.getInstance().addUser({
           username: userData.username,
           age: userData.age,
-          hobbies: [...userData.hobbies],
-          id: v4(),
-        };
-        UserService.getInstance().addUser(newUser);
-        // USERS[newUser.id] = userData;
+          hobbies: userData.hobbies,
+        });
+
         res.statusCode = 201;
         res.end(JSON.stringify(newUser), () => {
           console.log("\n New User has been added\n");
         });
       } catch (e: unknown) {
-        e instanceof Error && console.log(e.message);
+        reject(e);
       }
     });
-    return;
-  }
-  throw new Error();
-};
+
+    resolve();
+  });
+
 export { postUser };

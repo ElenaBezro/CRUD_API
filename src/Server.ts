@@ -1,9 +1,17 @@
 import { createServer } from "node:http";
 
 import { HTTPMethod, RequestHandler } from "./types";
+import cluster, { Worker } from "node:cluster";
+import os from "node:os";
+
+import { isMultiMode } from "./utils/isMultiMode";
+import { parseRequestBody } from "./utils/parseRequestBody";
 
 class Server {
-  private _server;
+  private server;
+  private currentChildProcessIndex = 0;
+  private workers: Worker[] = [];
+  private port!: number;
 
   private endpoints: Record<HTTPMethod, Record<string, RequestHandler>> = {
     GET: {},
@@ -13,7 +21,7 @@ class Server {
   };
 
   /**
-   * Function to register GET http request handler for provided URL
+   * Function to register http GET request handler for provided URL
    * @param url url to handle
    * @param handler a function to process request for provided URL
    */
@@ -34,15 +42,47 @@ class Server {
   }
 
   constructor() {
-    this._server = createServer((req, res) => {
-      console.log(`url: ${req.url}, method: ${req.method}`);
+    if (isMultiMode() && cluster.isPrimary) {
+      this.server = createServer(async (req, res) => {
+        const portOffset = (this.currentChildProcessIndex % this.workers.length) + 1;
+        this.currentChildProcessIndex++;
+
+        fetch(`http://localhost:${this.port + portOffset}${req.url}`, {
+          method: req.method,
+          body: req.method === "POST" || req.method === "PUT" ? await parseRequestBody(req) : undefined,
+        })
+          .then(async (response) => {
+            console.log(response.status);
+            let message = response.statusText;
+            try {
+              const json = await response.json();
+              message = JSON.stringify(json);
+            } catch {
+              // no json in response body, do nothing
+            }
+
+            res.statusCode = response.status;
+            res.end(message);
+          })
+          .catch((error: unknown) => {
+            console.error(error);
+            res.statusCode = 500;
+            res.end("Ooops, something went wrong");
+          });
+      });
+
+      return;
+    }
+
+    this.server = createServer((req, res) => {
+      console.log(`url: http://localhost:${this.port}${req.url}, method: ${req.method}`);
 
       const endpointsByUrl = this.endpoints[(req.method as HTTPMethod | undefined) ?? "GET"];
       const url = req.url ?? "";
 
-      const originalUrlParts = url.split("/"); // [ "api", "users", "123", "projects", "proj1"]
+      const originalUrlParts = url.split("/");
       for (const [url, handler] of Object.entries(endpointsByUrl)) {
-        const registeredUrlParts = url.split("/"); // ["api", "users", ":userId", "projects", ":projectId"]
+        const registeredUrlParts = url.split("/");
         if (registeredUrlParts.length !== originalUrlParts.length) {
           continue;
         }
@@ -53,7 +93,7 @@ class Server {
             return true;
           }
           if (part[0] === ":") {
-            pathParams[part.slice(1)] = originalUrlParts[index]; // pathParams["userId"] = "123";
+            pathParams[part.slice(1)] = originalUrlParts[index];
             return true;
           }
         });
@@ -74,8 +114,20 @@ class Server {
   }
 
   start(port: number) {
-    this._server.listen(port, () => {
-      console.log(`server started on port ${port}`);
+    this.port = process.env.WORKER_PORT ? +process.env.WORKER_PORT : port;
+
+    if (isMultiMode() && cluster.isPrimary) {
+      const workerCount = os.cpus().length;
+
+      this.workers = [...Array(workerCount)].map((_, index) => cluster.fork({ WORKER_PORT: this.port + index + 1 }));
+
+      cluster.on("exit", () => {
+        cluster.fork();
+      });
+    }
+
+    this.server.listen(this.port, () => {
+      console.log(`server started on port ${this.port}`);
     });
   }
 }

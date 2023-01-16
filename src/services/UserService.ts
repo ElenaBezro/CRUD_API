@@ -39,6 +39,13 @@ class UserService {
       username: user.username,
     };
   }
+
+  deleteUser(userId: string) {
+    if (!this.users[userId]) {
+      throw new Error(`user not found: ${userId}`);
+    }
+    delete this.users[userId];
+  }
 }
 
 export { UserService };

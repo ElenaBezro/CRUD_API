@@ -10,40 +10,33 @@ const putUser: RequestHandler = async (req, res, { userId }) => {
     return;
   }
 
-  try {
-    if (!UserService.getInstance().getUser(userId)) {
-      res.statusCode = 404;
-      res.end("User does not exist");
+  if (!UserService.getInstance().getUser(userId)) {
+    res.statusCode = 404;
+    res.end("User does not exist");
+    return;
+  }
+
+  const chunks: Buffer[] = [];
+  req.on("data", (chunk) => chunks.push(chunk));
+  req.on("end", () => {
+    const payload = JSON.parse(Buffer.concat(chunks).toString());
+    if (!isCreateUserPayload(payload)) {
+      res.statusCode = 400;
+      res.end("User data is invalid");
       return;
     }
 
-    const chunks: Buffer[] = [];
-    req.on("data", (chunk) => chunks.push(chunk));
-    req.on("end", () => {
-      const payload = JSON.parse(Buffer.concat(chunks).toString());
-      if (!isCreateUserPayload(payload)) {
-        res.statusCode = 400;
-        res.end("User data is invalid");
-        return;
-      }
-
-      const user: User = {
-        username: payload.username,
-        age: payload.age,
-        hobbies: [...payload.hobbies],
-        id: userId,
-      };
-      UserService.getInstance().updateUser(user);
-      res.statusCode = 201;
-      res.end(JSON.stringify(user), () => {
-        console.log("\n User Info has been updated\n");
-      });
+    const user: User = {
+      username: payload.username,
+      age: payload.age,
+      hobbies: [...payload.hobbies],
+      id: userId,
+    };
+    UserService.getInstance().updateUser(user);
+    res.statusCode = 201;
+    res.end(JSON.stringify(user), () => {
+      console.log("\n User Info has been updated\n");
     });
-  } catch (error: unknown) {
-    console.error(error);
-    res.statusCode = 500;
-    res.end();
-  }
-  //ошибки не выводятся, можно добавить лишние поля юзеру
+  });
 };
 export { putUser };

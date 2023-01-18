@@ -2,11 +2,11 @@
   "name": "crud_api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/App.ts",
   "scripts": {
-    "build": "npm run clean:build && tsc",
-    "clean:build": "rimraf build",
-    "start:prod": "npm run build && node build/App.js",
+    "build": "webpack",
+    "start:prod": "webpack && node ./dist/bundle.js",
+    "start:prod:multi": "npm run start:prod -- --multi",
     "start:dev": "nodemon",
     "start:multi": "nodemon -- --multi",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,9 +25,11 @@
     "@types/node": "^18.11.18",
     "@types/uuid": "^9.0.0",
     "nodemon": "^2.0.20",
-    "rimraf": "^3.0.2",
+    "ts-loader": "^9.4.2",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
   },
   "dependencies": {
     "dotenv": "^16.0.3",

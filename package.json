@@ -1,12 +1,15 @@
 {
-  "name": "crudapi",
+  "name": "crud_api",
   "version": "1.0.0",
-  "description": "CRUD API with an in-memory database",
-  "type": "module",
-  "main": "index.js",
+  "description": "",
+  "main": "src/App.ts",
   "scripts": {
-    "test": "node test",
-    "start": "node src/index.js"
+    "build": "webpack",
+    "start:prod": "webpack && node ./dist/bundle.js",
+    "start:prod:multi": "npm run start:prod -- --multi",
+    "start:dev": "nodemon",
+    "start:multi": "nodemon -- --multi",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -17,5 +20,19 @@
   "bugs": {
     "url": "https://github.com/ElenaBezro/CRUD_API/issues"
   },
-  "homepage": "https://github.com/ElenaBezro/CRUD_API#readme"
+  "homepage": "https://github.com/ElenaBezro/CRUD_API#readme",
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "@types/uuid": "^9.0.0",
+    "nodemon": "^2.0.20",
+    "ts-loader": "^9.4.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.4",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "uuid": "^9.0.0"
+  }
 }

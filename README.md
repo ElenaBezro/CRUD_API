@@ -34,11 +34,12 @@ CRUD API with an in-memory database underneath
 Request body to stringify example:
 **all fields required**
 
-````{
+````
+{
   username: "Mike",
   age: 40,
   hobbies: [
     "video games", 'cooking'
   ]
-}```
+}
 ````
